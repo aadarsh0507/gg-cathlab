@@ -7,7 +7,7 @@ pipeline {
     GH_OWNER        = 'aadarsh0507'
     // Hardcoded to match the GitHub repo name exactly — avoids underscore/case
     // mismatch where RAW_REPO was 'gg-implants' but image ended up as a different slug.
-    IMAGE_NAME      = 'gg-implants'
+    IMAGE_NAME      = 'gg-cathlab'
     DOCKER_BUILDKIT = '1'
     GIT_CRED_ID     = 'Jenkins'
     SONAR_TOKEN_ID  = 'sonar-token'
@@ -24,11 +24,16 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        checkout scm
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: '*/main']],
+          userRemoteConfigs: scm.userRemoteConfigs,
+          extensions: scm.extensions
+        ])
         script {
           def rawBranch = env.GIT_BRANCH ?: sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-          def normalized = rawBranch.replaceFirst(/^origin1?\//, '')
-          env.BRANCH_NAME = normalized
+          def normalized = rawBranch.replaceFirst(/^origin\/?/, '')
+          env.BRANCH_NAME = normalized ?: 'main'
           echo "Active git branch: ${env.BRANCH_NAME} (raw: ${rawBranch})"
         }
       }
@@ -37,7 +42,7 @@ pipeline {
     /* ---------- 1) SonarQube code scan ---------- */
     stage('Sonar Scan') {
       when {
-        anyOf { branch 'main'; branch 'dev'; branch 'aadarsh' }
+        expression { env.BRANCH_NAME in ['main', 'dev', 'aadarsh'] }
       }
       steps {
         script {
@@ -74,7 +79,7 @@ pipeline {
     /* ---------- 2) Sonar Quality Gate ---------- */
     stage('Quality Gate') {
       when {
-        anyOf { branch 'main'; branch 'dev'; branch 'aadarsh' }
+        expression { env.BRANCH_NAME in ['main', 'dev', 'aadarsh'] }
       }
       steps {
         timeout(time: 10, unit: 'MINUTES') {
@@ -140,7 +145,7 @@ pipeline {
       when { anyOf { branch 'main'; branch 'dev'; branch 'aadarsh' } }
       steps {
         script {
-          // IMAGE is always ghcr.io/aadarsh0507/gg-implants — hardcoded to
+          // IMAGE is always ghcr.io/aadarsh0507/gg-cathlab — hardcoded to
           // prevent underscore/case drift when git repo name differs from GHCR slug.
           env.IMAGE = "ghcr.io/${env.GH_NAMESPACE}/${env.IMAGE_NAME}"
 

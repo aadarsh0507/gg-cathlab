@@ -1,9 +1,9 @@
-# Implant Billing System — Production Dockerfile
+# Cath Lab Billing System — Production Dockerfile
 # Vite/React frontend + Express/Node.js backend (CommonJS) + MySQL app DB
 # (external) + Oracle HIS (external, read-only) + NAS share for vendor docs.
 #
-# Build:  docker build -t implant-billing:latest .
-# Run:    docker run -d -p 3000:5000 --env-file backend/.env implant-billing:latest
+# Build:  docker build -t cathlab-billing:latest .
+# Run:    docker run -d -p 3017:3017 --env-file backend/.env cathlab-billing:latest
 #
 # Required runtime env vars (see backend/.env for the full documented list):
 #   PORT, JWT_SECRET, JWT_EXPIRES_IN, CORS_ORIGIN
@@ -53,7 +53,7 @@ RUN mkdir -p uploads/vendor-documents
 COPY --from=frontend-builder /frontend/dist ./public
 
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=3017
 
 # Baked-in build metadata — queryable via GET /api/version
 ARG GIT_COMMIT=unknown
@@ -63,9 +63,9 @@ ENV GIT_COMMIT=$GIT_COMMIT
 ENV APP_VERSION=$APP_VERSION
 ENV BUILD_TIME=$BUILD_TIME
 
-EXPOSE 5000
+EXPOSE 3017
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:5000/api/health || exit 1
+  CMD wget --quiet --tries=1 --spider http://localhost:3017/api/health || exit 1
 
 CMD ["node", "src/index.js"]
