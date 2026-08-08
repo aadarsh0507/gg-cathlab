@@ -1,0 +1,296 @@
+.bill-page {
+  background: #e5e7eb;
+  min-height: 100vh;
+  padding: 1.5rem 0;
+}
+
+.bill-toolbar {
+  max-width: 210mm;
+  margin: 0 auto 1rem;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.bill-date-picker-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: #374151;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.bill-date-picker {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+.print-page-status {
+  padding: 2rem;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.print-page-error {
+  color: #991b1b;
+}
+
+.bill-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 15mm;
+  background: white;
+  color: #000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+.bill-letterhead {
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.bill-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  border-top: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  padding: 5px 0;
+  margin-bottom: 12px;
+}
+
+/* ── Patient info table ─────────────────────────────────────── */
+.bill-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+.bill-info-table td {
+  padding: 2px 6px 2px 0;
+  vertical-align: top;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Fixed widths so left and right columns stay parallel */
+.bill-label {
+  width: 100px;
+  font-weight: bold;
+  white-space: nowrap;
+  color: #000;
+}
+
+/* colon column */
+.bill-info-table .bill-colon {
+  width: 10px;
+  font-weight: bold;
+  text-align: center;
+  padding-right: 6px;
+}
+
+.bill-value {
+  width: auto;
+  padding-right: 24px;
+}
+
+/* right-side label */
+.bill-label-right {
+  width: 100px;
+  font-weight: bold;
+  white-space: nowrap;
+  padding-left: 16px;
+}
+
+.bill-colon-right {
+  width: 10px;
+  font-weight: bold;
+  text-align: center;
+  padding-right: 6px;
+}
+
+.bill-value-right {
+  width: auto;
+}
+
+/* ── Items table ────────────────────────────────────────────── */
+.bill-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 4px;
+}
+
+.bill-items-table thead th {
+  border-top: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  padding: 5px 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.bill-items-table thead th.bill-col-qty,
+.bill-items-table thead th.bill-col-amount {
+  text-align: right;
+}
+
+.bill-items-table thead th.bill-col-sl {
+  text-align: left;
+}
+
+.bill-items-table thead th.bill-col-desc {
+  text-align: left;
+}
+
+.bill-items-table tbody td {
+  padding: 4px 4px;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+.bill-col-sl {
+  width: 6%;
+  text-align: left;
+}
+
+.bill-col-desc {
+  width: 58%;
+  text-align: left;
+}
+
+.bill-col-qty {
+  width: 12%;
+  text-align: right;
+}
+
+.bill-col-amount {
+  width: 24%;
+  text-align: right;
+}
+
+.bill-subtotal-row td {
+  border-top: 1.5px solid #000;
+  font-weight: bold;
+  padding-top: 4px;
+}
+
+/* ── Totals table ───────────────────────────────────────────── */
+.bill-totals-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.bill-totals-table td {
+  padding: 3px 4px;
+  font-size: 12px;
+}
+
+.bill-totals-spacer {
+  width: 64%;
+}
+
+.bill-totals-label {
+  text-align: right;
+  width: 24%;
+  white-space: nowrap;
+  padding-right: 12px;
+}
+
+.bill-totals-value {
+  text-align: right;
+  width: 12%;
+  white-space: nowrap;
+}
+
+.bill-totals-final td {
+  font-weight: bold;
+  border-top: 1.5px solid #000;
+  padding-top: 4px;
+}
+
+/* ── Amount in words ────────────────────────────────────────── */
+.bill-amount-words {
+  font-size: 12px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.bill-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+.bill-footer-left {
+  align-self: flex-end;
+}
+
+.bill-footer-right {
+  text-align: right;
+  line-height: 1.8;
+}
+
+.bill-auth-sign {
+  margin-top: 2.5rem;
+  font-size: 12px;
+  border-top: 1px solid #000;
+  padding-top: 4px;
+  min-width: 140px;
+  text-align: center;
+}
+
+/* ── Note / page number ─────────────────────────────────────── */
+.bill-note {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #000;
+  padding-top: 6px;
+  font-size: 11px;
+}
+
+/* ── Print media ────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  body::before {
+    display: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .bill-page {
+    background: white;
+    padding: 0;
+  }
+
+  .bill-sheet {
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 15mm;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE items ADD COLUMN short_name VARCHAR(100) NULL AFTER item_name;

@@ -1,0 +1,10 @@
+**/node_modules
+**/.env
+**/.env.*
+**/dist
+**/uploads/vendor-documents/*
+!**/uploads/vendor-documents/.gitkeep
+.git
+.gitignore
+*.log
+npm-debug.log*
