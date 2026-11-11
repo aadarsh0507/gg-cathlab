@@ -413,7 +413,7 @@ pipeline {
 
               sh '''
                 set -eu
-                export GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+                export GIT_SSH_COMMAND="ssh -i '${GITOPS_SSH_KEY}' -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
                 git clone --branch "${GITOPS_BRANCH}" "${GITOPS_REPO}" .
                 git config user.email "ci@jenkins"
                 git config user.name "Jenkins CI"
@@ -444,7 +444,7 @@ pipeline {
                   set -eu
                   git add "${env.GITOPS_VALUES}"
                   git commit -m "Deploy cathlab ${gitOpsTag}"
-                  GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git push origin "${env.GITOPS_BRANCH}"
+                  GIT_SSH_COMMAND="ssh -i '${GITOPS_SSH_KEY}' -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git push origin "${env.GITOPS_BRANCH}"
                 """
 
                 echo "SUCCESS: GitOps repository updated to ${gitOpsTag}"
