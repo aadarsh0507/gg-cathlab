@@ -2,6 +2,13 @@ pipeline {
   agent any
 
   environment {
+    // Argo CD / GitOps: Jenkins bumps image.tag in this repo, Argo CD syncs it to k3s.
+    // Jenkins > Credentials: "SSH Username with private key", ID = gitops-ssh
+    GITOPS_CRED_ID  = 'gitops-ssh'
+    GITOPS_REPO     = 'git@github.com:aadarsh0507/ggh-his-gitops.git'
+    GITOPS_BRANCH   = 'main'
+    GITOPS_VALUES   = 'helm/cathlab/values.yaml'
+
     REGISTRY_URL    = 'https://ghcr.io'
     GH_NAMESPACE    = 'aadarsh0507'
     GH_OWNER        = 'aadarsh0507'
@@ -368,6 +375,82 @@ pipeline {
                 """
               } catch (Exception e) {
                 echo "WARNING: Git tag failed: ${e.getMessage()} — continuing."
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /* ---------- Update GitOps repository (Argo CD deploys to k3s) ---------- */
+    stage('Update GitOps') {
+
+      // Only main updates the GitOps deployment.
+      // dev/aadarsh images can still be pushed to GHCR without changing the cluster.
+      when { branch 'main' }
+
+      steps {
+        script {
+
+          // Deploy the immutable release version, e.g. v0.0.2. Never "latest".
+          def gitOpsTag = env.NEXT_VERSION
+          env.GITOPS_IMAGE_TAG = gitOpsTag
+
+          echo "=== Updating GitOps repository ==="
+          echo "Repository : ${env.GITOPS_REPO}"
+          echo "Branch     : ${env.GITOPS_BRANCH}"
+          echo "Values     : ${env.GITOPS_VALUES}"
+          echo "Image      : ${env.IMAGE}:${gitOpsTag}"
+
+          dir('gitops-workspace') {
+            deleteDir()
+
+            withCredentials([sshUserPrivateKey(
+              credentialsId: env.GITOPS_CRED_ID,
+              keyFileVariable: 'GITOPS_SSH_KEY',
+              usernameVariable: 'GITOPS_SSH_USER'
+            )]) {
+
+              sh '''
+                set -eu
+                export GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+                git clone --branch "${GITOPS_BRANCH}" "${GITOPS_REPO}" .
+                git config user.email "ci@jenkins"
+                git config user.name "Jenkins CI"
+              '''
+
+              sh """
+                set -eu
+
+                test -f "${env.GITOPS_VALUES}" || {
+                  echo "ERROR: ${env.GITOPS_VALUES} not found in GitOps repository."
+                  exit 1
+                }
+
+                sed -i -E 's/^(  tag: ).*/\\1"${gitOpsTag}"/' "${env.GITOPS_VALUES}"
+
+                echo "=== GitOps values.yaml after update ==="
+                grep -n -A3 '^image:' "${env.GITOPS_VALUES}"
+                git diff -- "${env.GITOPS_VALUES}"
+              """
+
+              def changed = sh(
+                returnStatus: true,
+                script: "git diff --quiet -- ${env.GITOPS_VALUES}"
+              )
+
+              if (changed != 0) {
+                sh """
+                  set -eu
+                  git add "${env.GITOPS_VALUES}"
+                  git commit -m "Deploy cathlab ${gitOpsTag}"
+                  GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git push origin "${env.GITOPS_BRANCH}"
+                """
+
+                echo "SUCCESS: GitOps repository updated to ${gitOpsTag}"
+                echo "Argo CD will detect the new Git commit and sync it to k3s."
+              } else {
+                echo "No GitOps change required. ${env.GITOPS_VALUES} already contains ${gitOpsTag}."
               }
             }
           }
